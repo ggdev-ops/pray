@@ -13,6 +13,10 @@
   <title>أسماء الله الحسنى والأدعية</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0b0f19">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Pray">
+  <link rel="apple-touch-icon" href="icon-192.png">
 
   <!-- CSS styling section to make the web page look premium and beautiful -->
   <style>
@@ -39,6 +43,8 @@
       align-items: center;
       height: 100vh;
       margin: 0;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
     }
 
     /* The central card containing the content */
@@ -51,6 +57,7 @@
       /* Subtle shadow to give the card depth (elevation) */
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
       max-width: 500px;
+      max-height: 90vh;
       width: 90%; /* Responsive width for mobile screens */
       transition: all 0.5s ease; /* Smooth transition for changes (like celebration border) */
     }
@@ -146,10 +153,12 @@
 
     /* Font size toggle controls */
     .font-controls {
+      position: fixed;
+      bottom: 15px;
+      left: 15px;
       display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 15px;
+      gap: 6px;
+      z-index: 10;
     }
 
     .font-btn {
@@ -197,13 +206,6 @@
     <!-- Paragraph displaying the Name and Prayer -->
     <p id="prayerText" class="prayer-display">اضغط على الزر للبدء</p>
     
-    <!-- Font size toggle -->
-    <div class="font-controls">
-      <button class="font-btn" data-size="small">أ-</button>
-      <button class="font-btn active" data-size="medium">أ</button>
-      <button class="font-btn" data-size="large">أ+</button>
-    </div>
-    
     <!-- Celebration text shown only when 99 names are completed -->
     <div id="celebrateMsg" class="celebration-message">
       🎉 مَاشَاءَ اللَّهُ! لَقَدْ أَكْمَلْتَ 99 اسْمًا مِنَ أَسْمَاءِ اللهِ الْحُسْنَى! 🎉
@@ -211,6 +213,13 @@
     
     <!-- Main trigger button -->
     <button id="prayButton">الاسم التالي</button>
+  </div>
+
+  <!-- Font size toggle (fixed position bottom-left) -->
+  <div class="font-controls">
+    <button class="font-btn" data-size="small">أ-</button>
+    <button class="font-btn active" data-size="medium">أ</button>
+    <button class="font-btn" data-size="large">أ+</button>
   </div>
 
   <!-- 1. First, we import the external pray.js script which contains our data array `prayForGod` -->
@@ -314,6 +323,14 @@
         btn.classList.add('active');
       });
     });
+
+    // Prevent Safari double-tap zoom
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', (e) => {
+      const now = Date.now();
+      if (now - lastTouchEnd < 300) e.preventDefault();
+      lastTouchEnd = now;
+    }, false);
   </script>
 
 </body>
