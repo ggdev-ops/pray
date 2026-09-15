@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <!-- Ensures the page looks good and fits perfectly on all screens (mobile, tablet, desktop) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Connect to Google Fonts to fetch the beautiful 'Cairo' font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
+
+  <title>أسماء الله الحسنى والأدعية</title>
+
+  <!-- CSS styling section to make the web page look premium and beautiful -->
+  <style>
+    /* CSS Variables: A clean way to store colors so we can reuse them easily */
+    :root {
+      --bg-color: #0b0f19;        /* Dark slate background */
+      --card-bg: #161c2a;         /* Slightly lighter dark background for the container */
+      --text-main: #ffffff;       /* Pure white text */
+      --text-muted: #94a3b8;      /* Muted gray-blue text for descriptions/counters */
+      --gold-accent: #fbe5aa;     /* Golden color for buttons/accents */
+      --gold-hover: #fefef6;      /* Lighter gold/cream color for hover state */
+      --green-celebrate: #10b981; /* Green color for the celebration state */
+    }
+
+    body {
+      /* Applying the Cairo font we imported from Google Fonts */
+      font-family: 'Cairo', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      
+      /* Center everything on the screen vertically and horizontally */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    /* The central card containing the content */
+    .container {
+      text-align: center;
+      background-color: var(--card-bg);
+      padding: 40px;
+      border-radius: 15px;
+      
+      /* Subtle shadow to give the card depth (elevation) */
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      max-width: 500px;
+      width: 90%; /* Responsive width for mobile screens */
+      transition: all 0.5s ease; /* Smooth transition for changes (like celebration border) */
+    }
+
+    /* Special style class added when the user finishes all 99 names */
+    .container.celebrate {
+      border: 3px solid var(--green-celebrate);
+      box-shadow: 0 15px 35px rgba(16, 185, 129, 0.3);
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: var(--gold-accent);
+    }
+
+    /* Styling for the progress counter */
+    .counter-display {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    hr {
+      border: 0;
+      height: 1px;
+      background: var(--text-muted);
+      margin: 20px 0;
+      opacity: 0.3;
+    }
+
+    /* Style the prayer output paragraph */
+    .prayer-display {
+      font-size: 20px;
+      line-height: 1.6;
+      margin: 30px 0;
+      min-height: 60px; /* Prevents layout shifting when text changes */
+      color: var(--text-main);
+    }
+
+    /* Styling for the celebration message container (initially hidden) */
+    .celebration-message {
+      display: none;
+      color: var(--green-celebrate);
+      font-size: 22px;
+      font-weight: bold;
+      margin: 20px 0;
+      animation: popIn 0.5s ease-out forwards;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Style the button */
+    button {
+      background-color: var(--gold-accent);
+      color: #000000;
+      border: none;
+      padding: 12px 35px;
+      font-size: 18px;
+      font-weight: bold;
+      font-family: 'Cairo', sans-serif;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      
+      /* Smooth transition when hovering or clicking the button */
+      transition: background-color 0.3s ease, transform 0.1s ease;
+    }
+
+    /* Hover effect */
+    button:hover {
+      background-color: var(--gold-hover);
+    }
+
+    /* Click effect (shrink slightly when clicked) */
+    button:active {
+      transform: scale(0.98);
+    }
+
+    /* Reset/Restart button style for celebration screen */
+    button.restart-btn {
+      background-color: var(--green-celebrate);
+      color: white;
+    }
+    button.restart-btn:hover {
+      background-color: #059669;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="mainContainer" class="container">
+    <h1>مَا شَاءَ اللَّهُ</h1>
+    <hr/>
+    <h1>الدُّعَاءُ بِأَسْمَاءِ اللهِ الْحُسْنَى</h1>
+    
+    <!-- Counter to show user progress (e.g. 1 / 99) -->
+    <div id="progressCounter" class="counter-display">العدد: 0 / 99</div>
+    
+    <!-- Paragraph displaying the Name and Prayer -->
+    <p id="prayerText" class="prayer-display">اضغط على الزر للبدء</p>
+    
+    <!-- Celebration text shown only when 99 names are completed -->
+    <div id="celebrateMsg" class="celebration-message">
+      🎉 مَاشَاءَ اللَّهُ! لَقَدْ أَكْمَلْتَ 99 اسْمًا مِنَ أَسْمَاءِ اللهِ الْحُسْنَى! 🎉
+    </div>
+    
+    <!-- Main trigger button -->
+    <button id="prayButton">الاسم التالي</button>
+  </div>
+
+  <!-- 1. First, we import the external pray.js script which contains our data array `prayForGod` -->
+  <script src="pray.js"></script>
+
+  <!-- 2. Next, we write our logic to link the data and control counter & celebration -->
+  <script>
+    // Grab the elements from the HTML Document using their unique IDs
+    const prayButton = document.getElementById('prayButton');
+    const prayerText = document.getElementById('prayerText');
+    const progressCounter = document.getElementById('progressCounter');
+    const mainContainer = document.getElementById('mainContainer');
+    const celebrateMsg = document.getElementById('celebrateMsg');
+
+    // Array to keep track of Names already shown
+    let shownPrayers = [];
+
+    // This function handles updating the view, counter, and celebration state
+    function getNextName() {
+      // Safety check: if our prayForGod array is not loaded from pray.js, exit to avoid errors
+      if (typeof prayForGod === 'undefined' || prayForGod.length === 0) {
+        prayerText.textContent = "خطأ: لم يتم تحميل قائمة الأدعية.";
+        return;
+      }
+
+      // Check if we already finished all 99 names
+      if (shownPrayers.length === prayForGod.length) {
+        // If they click the button after finishing, we restart/reset the counter
+        resetApp();
+        return;
+      }
+
+      let randomIndex;
+      let selected;
+
+      // Keep picking a random index until we find a Name that hasn't been shown yet
+      do {
+        randomIndex = Math.floor(Math.random() * prayForGod.length);
+        selected = prayForGod[randomIndex];
+      } while (shownPrayers.includes(selected.name));
+
+      // Save this name to our tracking array
+      shownPrayers.push(selected.name);
+
+      // Update the counter text on the page
+      progressCounter.textContent = `العدد: ${shownPrayers.length} / ${prayForGod.length}`;
+
+      // Update the prayer display text
+      prayerText.innerHTML = `<strong>${selected.name}</strong><br>${selected.prayer}`;
+
+      // Check if we just hit 99 (completed all names)
+      if (shownPrayers.length === prayForGod.length) {
+        triggerCelebration();
+      }
+    }
+
+    // Function to handle the celebration screen
+    function triggerCelebration() {
+      // Add 'celebrate' CSS class to the container to show green border & shadow
+      mainContainer.classList.add('celebrate');
+      
+      // Make the celebration message visible
+      celebrateMsg.style.display = 'block';
+      
+      // Change button text and style to offer a restart option
+      prayButton.textContent = 'إعادة من البداية';
+      prayButton.classList.add('restart-btn');
+    }
+
+    // Function to reset the application state to start over
+    function resetApp() {
+      shownPrayers = [];
+      mainContainer.classList.remove('celebrate');
+      celebrateMsg.style.display = 'none';
+      prayButton.textContent = 'الاسم التالي';
+      prayButton.classList.remove('restart-btn');
+      
+      // Load the first random name immediately
+      getNextName();
+    }
+
+    // Set an Event Listener to call getNextName whenever the button is clicked
+    prayButton.addEventListener('click', getNextName);
+
+    // Call it once when the page loads so the page starts with the first name active
+    window.onload = getNextName;
+  </script>
+
+</body>
+</html>
