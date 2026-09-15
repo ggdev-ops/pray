@@ -11,6 +11,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
 
   <title>أسماء الله الحسنى والأدعية</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b0f19">
 
   <!-- CSS styling section to make the web page look premium and beautiful -->
   <style>
@@ -117,6 +119,7 @@
       border-radius: 8px;
       cursor: pointer;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      touch-action: manipulation;
       
       /* Smooth transition when hovering or clicking the button */
       transition: background-color 0.3s ease, transform 0.1s ease;
@@ -140,6 +143,45 @@
     button.restart-btn:hover {
       background-color: #059669;
     }
+
+    /* Font size toggle controls */
+    .font-controls {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .font-btn {
+      background-color: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--text-muted);
+      padding: 4px 12px;
+      font-size: 14px;
+      font-weight: bold;
+      font-family: 'Cairo', sans-serif;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: none;
+    }
+
+    .font-btn.active {
+      background-color: var(--gold-accent);
+      color: #000000;
+      border-color: var(--gold-accent);
+    }
+
+    .font-btn:hover {
+      border-color: var(--gold-accent);
+    }
+
+    /* Font size states */
+    .font-small .prayer-display { font-size: 16px; }
+    .font-medium .prayer-display { font-size: 20px; }
+    .font-large .prayer-display { font-size: 26px; }
+    .font-small .counter-display { font-size: 14px; }
+    .font-large .counter-display { font-size: 18px; }
   </style>
 </head>
 <body>
@@ -154,6 +196,13 @@
     
     <!-- Paragraph displaying the Name and Prayer -->
     <p id="prayerText" class="prayer-display">اضغط على الزر للبدء</p>
+    
+    <!-- Font size toggle -->
+    <div class="font-controls">
+      <button class="font-btn" data-size="small">أ-</button>
+      <button class="font-btn active" data-size="medium">أ</button>
+      <button class="font-btn" data-size="large">أ+</button>
+    </div>
     
     <!-- Celebration text shown only when 99 names are completed -->
     <div id="celebrateMsg" class="celebration-message">
@@ -248,6 +297,23 @@
 
     // Call it once when the page loads so the page starts with the first name active
     window.onload = getNextName;
+
+    // Font size toggle
+    const fontBtns = document.querySelectorAll('.font-btn');
+    const savedSize = localStorage.getItem('prayFontSize') || 'medium';
+    document.body.classList.add('font-' + savedSize);
+    fontBtns.forEach(btn => {
+      if (btn.dataset.size === savedSize) btn.classList.add('active');
+      else btn.classList.remove('active');
+      btn.addEventListener('click', () => {
+        const size = btn.dataset.size;
+        document.body.classList.remove('font-small', 'font-medium', 'font-large');
+        document.body.classList.add('font-' + size);
+        localStorage.setItem('prayFontSize', size);
+        fontBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
   </script>
 
 </body>
