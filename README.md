@@ -34,7 +34,7 @@ Tap the button. See a Name of God. Read the prayer. Tap again. The app tracks yo
 
 | File | Purpose |
 |------|---------|
-| `pray.html` | Main interface |
+| `index.html` | Main interface |
 | `pray.js` | 99 Names data + selection logic |
 | `AGENTS.md` | Project constitution and development philosophy |
 | `DECISIONS.md` | Architectural decision records |
